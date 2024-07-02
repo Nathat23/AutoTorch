@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 
 public class GuiItemStack {
 
-    private final ItemStack itemStack;
+    private ItemStack itemStack;
     private Consumer<InventoryClickEvent> onClick;
 
     public GuiItemStack(ItemStack itemStack) {
@@ -30,10 +30,17 @@ public class GuiItemStack {
         this(itemStack.getBukkit().clone());
     }
 
-    public GuiItemStack replace(String itemToReplace, String replacement) {
+    public GuiItemStack createItemStack(String itemToReplace, String replacement) {
         GuiItemStack guiItemStack1 = new GuiItemStack(this);
         guiItemStack1.setOnClick(getOnClick());
-        ItemMeta itemMeta = guiItemStack1.getBukkit().getItemMeta();
+        ItemStack is = guiItemStack1.replaceItem(itemToReplace, replacement);
+        guiItemStack1.setItemStack(is);
+        return guiItemStack1;
+    }
+
+    public ItemStack replaceItem(String itemToReplace, String replacement) {
+        ItemStack is = itemStack.clone();
+        ItemMeta itemMeta = is.getItemMeta();
         List<String> lore = itemMeta.getLore() == null ? new ArrayList<>() : itemMeta.getLore();
         for (int i = 0; i < lore.size(); i++) {
             String atIndex = lore.get(i);
@@ -41,8 +48,12 @@ public class GuiItemStack {
             lore.set(i, atIndex);
         }
         itemMeta.setLore(lore);
-        guiItemStack1.getBukkit().setItemMeta(itemMeta);
-        return guiItemStack1;
+        is.setItemMeta(itemMeta);
+        return is;
+    }
+
+    public void setItemStack(ItemStack itemStack) {
+        this.itemStack = itemStack;
     }
 
     public ItemStack getBukkit() {

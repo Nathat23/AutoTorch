@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import uk.antiperson.autotorch.config.ConfigItem;
 import uk.antiperson.autotorch.config.Configuration;
 import uk.antiperson.autotorch.gui.BooleanGuiItem;
 import uk.antiperson.autotorch.gui.EnumGuiItem;
@@ -27,7 +28,7 @@ public class ConfigGui {
 
     public GuiPage createPage(Player player) {
         Set<String> keys = configuration.getFileConfiguration().getKeys(true);
-        GuiPage guiPage = new GuiPage(player, (keys.size() / 9) + 1);
+        GuiPage guiPage = new GuiPage(player, (int) Math.ceil(keys.size() / 9D));
         for (String key : keys) {
             GuiItem guiItem = generateItem(key);
             if (guiItem == null) {
@@ -41,6 +42,7 @@ public class ConfigGui {
 
     public GuiItem generateItem(String key) {
         Object object = configuration.getFileConfiguration().get(key);
+        ConfigItem configItem = configuration.getFromConfigRegistry(key);
         if (object instanceof Boolean) {
             BooleanGuiItem booleanGuiItem = new BooleanGuiItem();
             GuiItemStack enabled = new GuiItemStack(new ItemStack(Material.GREEN_WOOL), translation.getFileConfiguration().getString(key), Arrays.asList(ChatColor.GREEN + "Enabled", "", ChatColor.WHITE + "Click to disable"));
@@ -53,23 +55,29 @@ public class ConfigGui {
             return booleanGuiItem;
         }
         if (object instanceof Integer) {
-            IntegerGuiItem integerGuiItem = new IntegerGuiItem(Integer.MIN_VALUE, Integer.MAX_VALUE, configuration.getFileConfiguration().getInt(key));
-            integerGuiItem.setItemStack(new GuiItemStack(new ItemStack(Material.NETHERITE_PICKAXE), translation.getFileConfiguration().getString(key), Arrays.asList("%size%")));
+            ConfigItem.IntegerConfigItem anInt = (ConfigItem.IntegerConfigItem) configItem;
+            IntegerGuiItem integerGuiItem;
+            if (anInt == null) {
+                integerGuiItem = new IntegerGuiItem(Integer.MIN_VALUE, Integer.MAX_VALUE, configuration.getFileConfiguration().getInt(key));
+            } else {
+                integerGuiItem = new IntegerGuiItem(anInt.getMinBound(), anInt.getMaxBound(), configuration.getFileConfiguration().getInt(key));
+            }
+            integerGuiItem.setItemStack(new GuiItemStack(new ItemStack(Material.IRON_INGOT), translation.getFileConfiguration().getString(key), Arrays.asList("%size%")));
             integerGuiItem.getItemStack().setOnClick(click -> configuration.getFileConfiguration().set(key, integerGuiItem.getValue()));
             return integerGuiItem;
         }
-        Class<? extends Enum<?>> anEnum = configuration.getFromEnumRegistry(key);
-        if (anEnum != null) {
+        if (configItem instanceof ConfigItem.EnumConfigItem) {
+            ConfigItem.EnumConfigItem anEnum = (ConfigItem.EnumConfigItem) configItem;
             Enum<?> current = null;
-            for (Enum<?> lEnum : anEnum.getEnumConstants()) {
+            for (Enum<?> lEnum : anEnum.getValue().getEnumConstants()) {
                 if (lEnum.toString().equals(object.toString())) {
                     current = lEnum;
                     break;
                 }
             }
-            EnumGuiItem enumGuiItem = new EnumGuiItem(anEnum.getEnumConstants());
+            EnumGuiItem enumGuiItem = new EnumGuiItem(anEnum.getValue().getEnumConstants());
             GuiItemStack guiItem = new GuiItemStack(new ItemStack(Material.CRAFTING_TABLE), translation.getFileConfiguration().getString(key), Arrays.asList("%enum%", "", ChatColor.WHITE + "Click to shift"));
-            guiItem.setOnClick(click -> configuration.getFileConfiguration().set(key, enumGuiItem.getValue()));
+            guiItem.setOnClick(click -> configuration.getFileConfiguration().set(key, enumGuiItem.getValue().toString()));
             enumGuiItem.populate(guiItem);
             enumGuiItem.setShowing(current);
             return enumGuiItem;

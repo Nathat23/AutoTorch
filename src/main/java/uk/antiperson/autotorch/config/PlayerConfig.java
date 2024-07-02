@@ -26,7 +26,9 @@ public class PlayerConfig extends Configuration {
             }
         }
         getFileConfiguration().save(getFile());
-        addToEnumRegistry("take-torches-from", TorchLocation.class);
+        addToConfigRegistry(new ConfigItem.EnumConfigItem("take-torches-from", TorchLocation.class));
+        addToConfigRegistry(new ConfigItem.EnumConfigItem("wall-torch-side", WallTorchSide.class));
+        addToConfigRegistry(new ConfigItem.IntegerConfigItem("wall-torch-height", 0, 4));
     }
 
     public int getRadius() {
@@ -49,6 +51,14 @@ public class PlayerConfig extends Configuration {
         return PlayerConfig.TorchLocation.valueOf(getFileConfiguration().getString("take-torches-from"));
     }
 
+    public PlayerConfig.WallTorchSide getWallSide() {
+        return PlayerConfig.WallTorchSide.valueOf(getFileConfiguration().getString("wall-torch-side"));
+    }
+
+    public int getWallTorchHeight() {
+        return getFileConfiguration().getInt("wall-torch-height");
+    }
+
     public boolean isAttachToWalls() {
         return getFileConfiguration().getBoolean("attach-to-walls");
     }
@@ -65,5 +75,10 @@ public class PlayerConfig extends Configuration {
         HAND,
         OFF_HAND,
         INVENTORY
+    }
+
+    public enum WallTorchSide {
+        RIGHT,
+        LEFT
     }
 }

@@ -5,6 +5,10 @@ placing-enabled: false
 take-torches-from: HAND
 # Attach torch to wall rather than placing on the ground
 attach-to-walls: true
+# Which wall should torches be attached to?
+wall-torch-side: RIGHT
+# How many blocks up should torches be placed?
+wall-torch-height: 1
 # How far should we check to place torches
 radius: 8
 # What is the minimum light level to place torches

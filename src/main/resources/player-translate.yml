@@ -1,6 +1,8 @@
 placing-enabled: 'Torch Placing'
 take-torches-from: 'Torch Source'
 attach-to-walls: 'Attach To Walls'
+wall-torch-side: 'Wall Torch Side'
+wall-torch-height: 'Wall Torch Placement Height'
 radius: 'Maximum Placement Distance'
 light-level: 'Minimum Light Level'
 y-min: 'Minimum Y Level'

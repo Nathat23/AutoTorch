@@ -14,7 +14,7 @@ public class EnumGuiItem extends DynamicGuiItem {
 
     public void populate(GuiItemStack guiItemStack) {
         for (Enum<?> value : values) {
-            GuiItemStack guiItemStack1 = guiItemStack.replace("%enum%", value.toString());
+            GuiItemStack guiItemStack1 = guiItemStack.createItemStack("%enum%", value.toString());
             addItem(value.ordinal(), guiItemStack1);
         }
     }

@@ -17,12 +17,12 @@ public abstract class Configuration {
     private FileConfiguration fileConfiguration;
     private final File file;
     private final AutoTorch autoTorch;
-    private final Map<String, Class<? extends Enum<?>>> enumRegistry;
+    private final Map<String, ConfigItem> configRegistry;
 
     public Configuration(AutoTorch autoTorch, String fileName) {
         this.autoTorch = autoTorch;
         this.file = new File(autoTorch.getDataFolder(), fileName);
-        this.enumRegistry = new HashMap<>();
+        this.configRegistry = new HashMap<>();
     }
 
     public FileConfiguration getFileConfiguration() {
@@ -64,12 +64,12 @@ public abstract class Configuration {
         getFileConfiguration().save(file);
     }
 
-    <T extends Enum<T>> void addToEnumRegistry(String path, Class<T> clazz) {
-        enumRegistry.put(path, clazz);
+    public void addToConfigRegistry(ConfigItem item) {
+        configRegistry.put(item.getPath(), item);
     }
 
-    public Class<? extends Enum<?>> getFromEnumRegistry(String path) {
-        return enumRegistry.get(path);
+    public ConfigItem getFromConfigRegistry(String path) {
+        return configRegistry.get(path);
     }
 
     public void init() throws IOException {

@@ -1,6 +1,7 @@
 package uk.antiperson.autotorch.gui;
 
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import uk.antiperson.autotorch.AutoTorch;
 
@@ -48,10 +49,12 @@ public class IntegerGuiItem extends GuiItem {
 
     @Override
     public GuiItemStack getItemStack() {
-        if (!isUpdated() && currentItem != null) {
+        ItemStack replaced = super.getItemStack().replaceItem("%size%", getValue() + "");
+        if (currentItem != null) {
+            currentItem.setItemStack(replaced);
             return currentItem;
         }
-        currentItem = super.getItemStack().replace("%size%", getValue() + "");
+        currentItem = new GuiItemStack(replaced);
         return currentItem;
     }
 
